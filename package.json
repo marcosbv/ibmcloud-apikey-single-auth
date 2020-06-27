@@ -1,0 +1,16 @@
+{
+  "name": "ibmcloud-apikey-single-auth",
+  "version": "0.1",
+  "description": "Allows authentication to IBM Cloud platform and retrieval of IAM tokens and service credentials",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Marcos Vieira (marcosbv@br.ibm.com)",
+  "license": "ISC",
+  "dependencies": {
+    "jwt-decode": "^2.2.0",
+    "request": "^2.88.2",
+    "request-promise-native": "^1.0.8"
+  }
+}
