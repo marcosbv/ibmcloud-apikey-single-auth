@@ -22,19 +22,22 @@ An API Key is issued and used to access services. Two possible ways to access Cl
 Below an example of usage:
 
 ```javascript
-const IBMCloudApikeyAuthClient = require('ibmcloud-apikey-single-auth')
+const IBMCloudApikeyAuthClient = require('@marcosbv/ibmcloud-apikey-single-auth')
 
 // instantiate a new client object 
 const ibmcloudclient = new IBMCloudApikeyAuthClient({apikey: 'UJkTPJ548m8PtDGkP2ZumxEEvPwn-VVzLCvqxJjmF4w1'})
 
 // issue a new token
-const token = ibmcloudclient.getToken()
-console.log(token)
+ibmcloudclient.getToken().then((token) => {
+    console.log(token)
+})
 /* output: eyJraWQiOiIyMDIwMDYyNDE4MzAiLCJhbGciOiJSUzI1NiJ9.eyJpYW1faWQiOiJpYW0tU2VydmljZUlkLTRlNDhiNGZiLTNjY2MtNDE0Mi1iMzQwLTE5OGVjNGFiZTdiZiIsImlkIjoiaWFtLVNlcnZpY2VJZC00ZTQ4YjRmYi0zY2NjLTQxNDItYjM0MC0xOThlYzRhYmU3YmYiLCJyZWFsbWlkIjoiaWFtIiwiaWRlbnRpZmllciI6IlNlcnZpY2VJZC00ZTQ4YjRmYi0zY2NjLTQxNDItYjM0MC0xOThlYzRhYmU3YmYiLCJuYW1lIjoiX2FwcC11c2FnZS1yZXBvcnQiLCJzdWIiOiJTZXJ2aWNlSWQtNGU0OGI0ZmItM2NjYy00MTQyLWIzNDAtMTk4ZWM0YWJlN2JmIiwic3ViX3R5cGUiOiJTZXJ2aWNlSWQiLCJhY2NvdW50Ijp7InZhbGlkIjp0cnVlLCJic3MiOiIzZTgxOTI2MGQ0ZjM0MGMwOTk5MjQwZTkwOWQ2MWEwOCJ9LCJpYXQiOjE1OTMyMDg1NDcsImV4cCI6MTU5MzIxMjE0NywiaXNzIjoiaHR0cHM6Ly9pYW0uY2xvdWQuaWJtLmNvbS9pZGVudGl0eSIsImdyYW50X3R5cGUiOiJ1cm46aWJtOnBhcmFtczpvYXV0aDpncmFudC10eXBlOmFwaWtleSIsInNjb3BlIjoiaWJtIG9wZW5pZCIsImNsaWVudF9pZCI6ImRlZmF1bHQiLCJhY3IiOjEsImFtciI6WyJwd2QiXX0.r7Jd0kKBR7llsDq_xroWqjVxkyoFG3CcRMbjY8WHjlDGw0rVYPTo3_ZAXBzdjthEyDYZUTmAlkt4j5ELUyhvIE3_Re90yi0wBDxZMggEbEOSd6Xq19ybBK13mG3pd4Q2ShWMVwPWBSU4IIFlado-bSBSSgqaVEmtbNOVbMAnQT5g3oCeruDdy5pxFjqJuxPgPqtraayFdpqn19ZqgPlRVHHWp1Cn3SDYaGHmGvZkJZkNs3pXlOpa4eWbcrjcTriFOsbOP9zvIHyY_M8M4_s78H7-RD_uhc_TvEvWedp5srMJcV5SJ0QYaO3aXrZ48sC1kbTlhVnt2rX6OH7z68hfxg
 */
 
-const credentialsObject = ibmcloudclient.getServiceCredentialByName('My_PostgreSQL_Credentials')
-console.log(credentialsObject)
+ibmcloudclient.getServiceCredentialByName('My_PostgreSQL_Credentials').then((creds) => {
+    console.log(creds)
+})
+
 /* output:
 { credentials:
    { connection: { cli: [Object], postgres: [Object] },
