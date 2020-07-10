@@ -129,7 +129,7 @@ class IBMCloudApikeyAuthClient {
                 const token_data = jwt_decode(this.token)
                 const expiration_time = token_data.exp * 1000
                 const nowMinus1Minute = Date.now() - 60000
-                if(expiration_time < nowMinus1Minute) {
+                if(expiration_time >= nowMinus1Minute) {
                     this.token = await issue_token(icp_url, this.apikey)
                 }
             } else {
