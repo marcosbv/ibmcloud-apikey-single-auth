@@ -1,6 +1,6 @@
 {
   "name": "@marcosbv/ibmcloud-apikey-single-auth",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Allows authentication to IBM Cloud platform and retrieval of IAM tokens and service credentials",
   "main": "index.js",
   "scripts": {
