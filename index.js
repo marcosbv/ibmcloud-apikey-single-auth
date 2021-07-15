@@ -18,7 +18,7 @@ const jwt_decode = require('jwt-decode')
  * 
  * @returns             A Promise with a token as a String.
  */
-async function issue_token(icp_url, apikey) {
+async function issue_token(icp_url, apikey, client_certificate=null) {
     let request_options = {
         url: icp_url,
         form: {
@@ -30,6 +30,11 @@ async function issue_token(icp_url, apikey) {
         },
         rejectUnauthorized: false,
         
+    }
+
+    if(client_certificate) {
+        request_options.key = client_certificate.key,
+        request_options.cert = client_certificate.crt
     }
 
     return new Promise (function (resolve, reject) {
@@ -77,8 +82,33 @@ async function baseGetRequest(url, token) {
  * 
  * @returns             A Promise with a Response Object or an error if rejected.
  */
-async function getResourceKeys(token) {
-    return baseGetRequest('https://resource-controller.cloud.ibm.com/v2/resource_keys', token)
+ async function getResourceKeys(token) {
+    let keys = []
+    let hasNext = true;
+    
+    let url = 'https://resource-controller.cloud.ibm.com/v2/resource_keys'
+    while(hasNext) {
+        const responseStr = await baseGetRequest(url, token)
+        const response = JSON.parse(responseStr);
+
+        keys = keys.concat(response.resources);
+        if(response.next_url) {
+            if(response.next_url != "") {
+                url = `https://resource-controller.cloud.ibm.com${response.next_url}`
+            } else {
+                hasNext = false;
+            }
+        } else {
+            hasNext = false;
+        }
+
+    }
+    
+    const resources = {
+        resources: keys,
+        rows_count: keys.length
+    }
+    return JSON.stringify(resources)
 }
 
 /**
@@ -109,6 +139,13 @@ class IBMCloudApikeyAuthClient {
            this.apikey = options.apikey || process.env.IBMCLOUD_API_KEY
            this.url = options.url || process.env.IBMCLOUD_IAM_URL || "https://iam.cloud.ibm.com"
            this.token = null;
+           this.clientCertificate = options.clientCertificate || null
+
+           if(this.clientCertificate) {
+               if(!this.clientCertificate.crt || !this.clientCertificate.key) {
+                   throw new Error('\n Error initializing class: When using client certificate for mTLS you must have crt and key properties.')
+               }
+           }
 
            if(this.apikey == null) {
                throw new Error('\nError initializing class: API Key not found.\nDeclare it in the options object or in an environment variable named IBMCLOUD_API_KEY.\n' )
@@ -130,10 +167,10 @@ class IBMCloudApikeyAuthClient {
                 const expiration_time = token_data.exp * 1000
                 const nowMinus1Minute = Date.now() - 60000
                 if(expiration_time < nowMinus1Minute) {
-                    this.token = await issue_token(icp_url, this.apikey)
+                    this.token = await issue_token(icp_url, this.apikey, this.clientCertificate)
                 }
             } else {
-                this.token = await issue_token(icp_url, this.apikey)
+                this.token = await issue_token(icp_url, this.apikey, this.clientCertificate)
             }
            
             return this.token;
@@ -174,6 +211,16 @@ class IBMCloudApikeyAuthClient {
                 }
                 
             })
+        }
+
+        async getAccountId() {
+            const token = await this.getToken()
+            this.getAccountId(token)
+        }
+        
+        async getAccountId(token) {
+            const token_data = jwt_decode(token)
+            return token_data.account.bss
         }
 
     }
